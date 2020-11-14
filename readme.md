@@ -29,7 +29,7 @@ El script *"devstart"* se encuentra configurado en el archivo package.json del p
  	
 ### Bicicletas API
 
-#### POST (<i>C</i>reate)
+#### POST (Create)
 
 ##### Ingresar una nueva bicicleta al sistema:
 
@@ -59,7 +59,7 @@ JSON de ejemplo:
 
 Respuesta del metodo POST, es un JSON status 200, con la información de la bicicleta ingresada al sistema
 
-#### GET (<i>R</i>ead)
+#### GET (Read)
 
 ##### Consultar todas las bicicletas del sistema:
 
@@ -92,7 +92,7 @@ La respuesta es un Array de JSON con todas las bicicletas en el sistema.
 }
 ```
 
-#### DELETE (<i>D</i>elete)
+#### DELETE (Delete)
 
 ##### Borrar una bicicleta:
 
