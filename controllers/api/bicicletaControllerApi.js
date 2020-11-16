@@ -7,20 +7,68 @@ var Bicicleta = require("../../models/bicicleta");
 }
 */
 exports.bicicleta_list = function (req, res) {
-  console.log("Entro a controller");
   Bicicleta.allBicis(function (err, bicis) {
     res.status(200).json({ bicicletas: bicis });
   });
 };
 
 exports.bicicleta_create = function (req, res) {
-  var bici = new Bicicleta(req.body.id, req.body.color, req.body.modelo);
+  console.log(req.body);
+  // var bici2 = Bicicleta.createInstance(10,
+  //   req.body.color,
+  //   req.body.modelo);
+  //   console.log(bici2);
+  var bici = new Bicicleta({
+    code: req.body.code,
+    color: req.body.color,
+    modelo: req.body.modelo,
+  });
   bici.ubicacion = [req.body.lat, req.body.lng];
+  console.log(bici);
   Bicicleta.add(bici, function (err, bici2) {
     res.status(200).json({ bicicleta: bici2 });
   });
 };
-/* Te das cuenta que ahora usamos Bicicleta.allBicis como una función que recibe otra función,
+exports.bicicleta_update = function (req, res) {
+  console.log(req.body);
+  Bicicleta.findByCode(req.body.code, function (err, bici) {
+    //BICI Y ERR SON LOS DOS POSIBLES DATOS DE SALIDA DEL METODO FINDBYCODE Y PASAN COMO ENTRADA DEL CALLBACK
+    console.log(bici);
+    if (err) {
+      return res
+        .status(404)
+        .json({ error: ["Error al actualizar la bici", error] });
+    } else {
+      var bici = new Bicicleta({
+        code: req.body.code,
+        color: req.body.color,
+        modelo: req.body.modelo,
+      });
+      bici.ubicacion = [req.body.lat, req.body.lng];
+      console.log(bici);
+      Bicicleta.update(bici, function (err, bici) {
+        res.status(200).json({ bicicleta: bici });
+      });
+    }
+  });
+};
+
+exports.bicicleta_delete = function (req, res) {
+  console.log(req.body);
+  Bicicleta.findByCode(req.body.code, function (err, bici) {
+    //BICI Y ERR SON LOS DOS POSIBLES DATOS DE SALIDA DEL METODO FINDBYCODE Y PASAN COMO ENTRADA DEL CALLBACK
+    if (err) {
+      return res
+        .status(404)
+        .json({ error: ["Error bici no encontrada en el sistema", error] });
+    } else {
+      Bicicleta.deleteByCode(bici.code, function (err, bici) {
+        res.status(204).json();
+      });
+    }
+  });
+};
+/* Te das cuenta que ah/ora usamos Bicicleta.allBicis como una función que recibe otra función,
  esta función que recibe es un callback, la cuál recibe a su vez dos parametros una parametro de error 
  y otro de éxito O sea si el callback falla retornará err 
  y si sale todo bien retornará el parametro de exito en este caso le puse bicis entonces la función

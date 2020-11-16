@@ -42,21 +42,39 @@ bicicletaSchema.statics.add = function (aBici, cb) {
 bicicletaSchema.statics.findByCode = function (aCode, cb) {
   return this.findOne({ code: aCode }, cb);
 };
+bicicletaSchema.statics.findById = function (aId, cb) {
+  return this.findById({ _id: aId }, cb);
+};
+bicicletaSchema.statics.deleteByCode = function (aCode, cb) {
+  this.deleteOne({ code: aCode }, cb);
+};
 
-bicicletaSchema.statics.removeByCode = function (aCode, cb) {
+// bicicletaSchema.statics.removeByCode = function (aId, cb) {
+//   return this.deleteOne({ _id: aId }, cb);
+// };
+
+/*bicicletaSchema.statics.removeByCode = function (aCode, cb) {
   return this.deleteOne({ code: aCode }, cb);
-};
+};*/
+
+// bicicletaSchema.statics.update = function (aBici, cb) {
+//   console.log(aBici);
+//   return aBici.save({}, cb);
+// };
 
 bicicletaSchema.statics.update = function (aBici, cb) {
-  return aBici.save();
-};
-bicicletaSchema.statics.update = function (aBici, cb) {
-  console.log(aBici);
-  return this.update({
-    code: aBici.code,
-    modelo: aBici.modelo,
-    color: aBici.modelo,
-  });
+  return this.findOneAndUpdate(
+    { code: aBici.code },
+    {
+      $set: {
+        color: aBici.color,
+        modelo: aBici.modelo,
+        ubicacion: aBici.ubicacion,
+      },
+    },
+    { new: true },
+    cb
+  );
 };
 module.exports = moongose.model("Bicicleta", bicicletaSchema);
 

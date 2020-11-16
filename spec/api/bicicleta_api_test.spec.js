@@ -8,9 +8,9 @@ var urlDB = "mongodb://localhost/testdb";
 var api_url = "http://localhost:3000/api/bicicletas";
 
 describe("Testing Bicicletas API", function () {
-  beforeAll((done) => {
-    mongoose.connection.close(done);
-  });
+  // beforeAll((done) => {
+  //   mongoose.connection.close(done);
+  // });
   //Soluciona el error de multiples conexiones a mongo
   //Tambien se puede poner en el beforeEach()
   /*********
@@ -37,7 +37,8 @@ describe("Testing Bicicletas API", function () {
   afterEach(function (done) {
     Bicicleta.deleteMany({}, function (err, success) {
       if (err) console.log(err);
-      mongoose.disconnect(err);
+      //mongoose.disconnect(err); ORIGINAL
+      mongoose.disconnect(done);
       done();
     });
   });
@@ -66,71 +67,79 @@ describe("Testing Bicicletas API", function () {
   //     // mongoose.disconnect(err);
   //     done();
   //   });
+  // })
+  // describe(" Get BICICLETAS bicicletas/\n", () => {
+  //   it("Status 200", (done) => {
+  //     request.get(
+  //       api_url,
+  //       function (error, response, body) {
+  //         var result = JSON.parse(body);
+  //         console.log(result);
+  //         expect(response.statusCode).toBe(200);
+  //         expect(result.bicicletas.length).toBe(0);
+  //         done();
+  //       },
+  //       250
+  //     );
+  //   });
+  // });
+  // describe(" POST BICICLETAS /create\n", () => {
+  //   it("Status 200", (done) => {
+  //     var headers = { "content-type": "application/json" };
+  //     var abici =
+  //       '{ "code":10,"color":"Verde","modelo":"Urbana","lat": 10.975832,"lng": -74.808815 }';
+  //     request.post(
+  //       {
+  //         headers: headers,
+  //         url: "http://localhost:3000/api/bicicletas/create",
+  //         body: abici,
+  //       },
+  //       function (error, response, body) {
+  //         console.log(response.statusCode);
+  //         console.log(response.statusMessage);
+  //         console.log(body);
+  //         expect(response.statusCode).toBe(200);
+  //         expect(Bicicleta.findByCode(10).color).toBe(abici.color);
+  //         done();
+  //       },
+  //       250
+  //     );
+  //   });
   // });
 
-  describe(" Get BICICLETAS /", () => {
+  describe("Update Bicicleta /update", () => {
     it("Status 200", (done) => {
-      request.get(
-        api_url,
-        function (error, response, body) {
-          console.log("ENTRO");
-          var result = JSON.parse(body);
-          console.log(result);
-          expect(response.statusCode).toBe(200);
-          expect(result.bicicletas.legth).toBe(0);
-          done();
+      expect(Bicicleta.allBicis.length).toBe(1);
+      var bici = new Bicicleta({
+        code: 1,
+        color: "negra",
+        modelo: "urbana",
+        ubicacion: [-34.6012424, -58.3861497],
+      });
+      console.log(bici);
+      // var a = new Bicicleta(1, "negra", "urbana", [-34.6012424, -58.3861497]);
+      // console.log(a);
+      Bicicleta.add(bici);
+      expect(Bicicleta.allBicis.length).toBe(1);
+      var headers = { "content-type": "application/json" };
+      var aBici =
+        '{"code": 1, "color": "rojo", "modelo": "urbana", "lat": -34; "lng": -34}';
+      request.patch(
+        {
+          headers: headers,
+          url: "http://localhost:3000/api/bicicletas/update",
+          body: aBici,
         },
-        250
+        function (error, response, body) {
+          
+          expect(response.statusCode).toBe(200);
+          expect(Bicicleta.findByCode(1).color).toBe(aBici.color);
+          done();
+        }
       );
     });
   });
 });
-//describe(" POST BICICLETAS /create", () => {
-//   it("Status 200", (done) => {
-//     var headers = { "content-type": "application/json" };
-//     var abici =
-//       '{ "id":10,"color":"Green","modelo":"Urbana","lat": 10.975832,"lng": -74.808815 }';
-//     request.post(
-//       {
-//         headers: headers,
-//         url: "http://localhost:3000/api/bicicletas/create",
-//         body: abici,
-//       },
-//       function (error, response, body) {
-//         console.log(response.statusCode);
-//         console.log(response.statusMessage);
-//         console.log(body);
-//         expect(response.statusCode).toBe(200);
-//         expect(Bicicleta.findById(10).color).toBe("Green");
-//         done();
-//       }
-//     );
-//   });
-// });
-
-// describe("Update Bicicleta /update", () => {
-//   it("Status 200", (done) => {
-//     expect(Bicicleta.allBicis.length).toBe(0);
-//     var a = new Bicicleta(1, "negra", "urbana", [-34.6012424, -58.3861497]);
-//     Bicicleta.add(a);
-//     expect(Bicicleta.allBicis.length).toBe(1);
-//     var headers = { "content-type": "application/json" };
-//     var aBici =
-//       '{"id": 1, "color": "rojo", "modelo": "urbana", "lat": -34; "lng": -34}';
-//     request.post(
-//       {
-//         headers: headers,
-//         url: "http://localhost:3000/api/bicicletas/update",
-//         body: aBici,
-//       },
-//       function (error, response, body) {
-//         expect(response.statusCode).toBe(200);
-//         expect(Bicicleta.findById(1).color).toBe("rojo");
-//         done();
-//       }
-//     );
-//   });
-// });
 
 /*  SIN USUARIOS Y RESERVAS
 describe("Bicicleta API\n", () => {
