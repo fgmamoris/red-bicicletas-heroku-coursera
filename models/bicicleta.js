@@ -1,4 +1,66 @@
-var Bicicleta = function (id, color, modelo, ubicacion) {
+var moongose = require("mongoose");
+var Schema = moongose.Schema;
+
+var bicicletaSchema = new Schema({
+  code: Number,
+  color: String,
+  modelo: String,
+  ubicacion: {
+    type: [Number],
+    index: { type: "2dsphere", sparse: true },
+  },
+});
+
+//Metodo static para poder utilizar el crear instancia Bicicleta.createInstance
+bicicletaSchema.statics.createInstance = function (
+  code,
+  color,
+  modelo,
+  ubicacion
+) {
+  return this({
+    code: code,
+    color: color,
+    modelo: modelo,
+    ubicacion: ubicacion,
+  });
+};
+
+//Metodo de instancias, responde a la instancia de este esquema
+bicicletaSchema.methods.toString = function () {
+  return "code: " + this.code + "| color: " + this.color;
+};
+
+//Agrego metodo estatico agreo el metodo directamente al modelo
+bicicletaSchema.statics.allBicis = function (cb) {
+  return this.find({}, cb);
+};
+
+bicicletaSchema.statics.add = function (aBici, cb) {
+  this.create(aBici, cb);
+};
+bicicletaSchema.statics.findByCode = function (aCode, cb) {
+  return this.findOne({ code: aCode }, cb);
+};
+
+bicicletaSchema.statics.removeByCode = function (aCode, cb) {
+  return this.deleteOne({ code: aCode }, cb);
+};
+
+bicicletaSchema.statics.update = function (aBici, cb) {
+  return aBici.save();
+};
+bicicletaSchema.statics.update = function (aBici, cb) {
+  console.log(aBici);
+  return this.update({
+    code: aBici.code,
+    modelo: aBici.modelo,
+    color: aBici.modelo,
+  });
+};
+module.exports = moongose.model("Bicicleta", bicicletaSchema);
+
+/*var Bicicleta = function (id, color, modelo, ubicacion) {
   this.id = id;
   this.color = color;
   this.modelo = modelo;
@@ -30,10 +92,10 @@ Bicicleta.removeById = function (aBiciId) {
   }
 };
 
-/*var a = new Bicicleta(1, "rojo", "ubarna", [-41.134889, -71.306174]);
+var a = new Bicicleta(1, "rojo", "ubarna", [-41.134889, -71.306174]);
 var b = new Bicicleta(2, "blanca", "ubarna", [-41.134889, -71.305974]);
 
 Bicicleta.add(a);
 Bicicleta.add(b);
-*/
 module.exports = Bicicleta;
+*/
