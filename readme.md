@@ -9,19 +9,19 @@
 
 ## Instalación 
 Para dar cumplimiento con el enunciado del ejercicio, se indica a continuación  los comandos de ejecución:
+
 ```
 	npm install
 ```
+
 Instala todas las dependencias de nodejs en el proyecto.
+
 ```
 	npm devstart
 ```
+
 Ejecuta la dependencia nodemon en modo dev.
 El script *"devstart"* se encuentra configurado en el archivo package.json del proyecto
-```
-	npm test
-```
-Ejecuta todos los test del sistema, segun lo solicitado en el módulo 2.
 
 ## Bicicletas Web
 
@@ -41,7 +41,7 @@ Ejecuta todos los test del sistema, segun lo solicitado en el módulo 2.
 ## Bicicletas API
 
 #### [Bicicletas](#Bicicletas) 
- `/api/bicicletas`
+### `/api/bicicletas`
 * [ ] `GET /`
 * [ ]  `POST /bicicletas/create`
 * [ ] `PATCH /bicicletas/update`
@@ -59,9 +59,8 @@ Ejecuta todos los test del sistema, segun lo solicitado en el módulo 2.
 * [ ] `PATCH /reservas/update`
 * [ ]  `DELETE /reservas/delete`
 
-<<<<<<< HEAD
 #### POST (Create)
-=======
+
 ### Bicicletas 
 ##### GET (Read)
 
@@ -100,7 +99,7 @@ La respuesta es un Array de _JSON_STATUS_OK__(_200)_ con todas las bicicletas en
 }
 ```
 ##### POST (Create) 
->>>>>>> testing
+
 
 ##### Ingresar una nueva bicicleta al sistema:
 
@@ -130,13 +129,12 @@ JSON de ejemplo:
 
 Respuesta del metodo POST, es un _JSON_STATUS_OK__(_200)_, con la información de la bicicleta ingresada al sistema
 
-<<<<<<< HEAD
 #### GET (Read)
-=======
+
 ##### PATCH (Update) 
 ##### Actualizar  bicicleta del sistema:
 * `PATCH http://localhost:3000/api/bicicletas/update`
->>>>>>> testing
+
 
 Los campos son obligatorios son code, color, modelo, los campos lat, y lng son opcionales.
 
@@ -197,11 +195,9 @@ La respuesta es un Array de _JSON_STATUS_OK__(_200)_ con usuarios en el sistema.
 ##### POST (Create) 
 ##### Ingresar un nuevo usuario al sistema:
 
-<<<<<<< HEAD
 #### DELETE (Delete)
-=======
+
 * `POST http://localhost:3000/api/usuarios/create`
->>>>>>> testing
 
 Consta de un único campo y es obligatorio.
 
@@ -294,7 +290,7 @@ JSON de ejemplo:
 	"usuario":"5fb439744c1d71bba7fef3",
 	"bicicleta": "5fb43b5170dfd6564ced3bb2",
 	"desde": "2020-01-01",
-	"hasta", "2020-01-20
+	"hasta": "2020-01-20"
 }
 ```
 Respuesta del metodo PATCH, es un _JSON_STATUS_OK_ 200, con la información de la reserva actualizada
@@ -313,70 +309,14 @@ Se envia el parametro "usuario" y "bicicleta" de la reserva a eliminar dentro de
 La respuesta es un _JSON_STATUS_OK_ (204) (No content)
 
 
-##### POST (Create) 
-##### Ingresar una nueva reserva al sistema:
-
-* `POST http://localhost:3000/api/usuarios/reservas/create`
-
-Todos los campos son obligatorios
-
-| Campo | Tipo | Descripción |
-|:---|:---:| --- |
-| id | Int | Número de identificación |
-| color | String | Color de la bicicleta|
-| modelo | String | Modelo de bicicleta |
-| lat | Double | Latitud donde se encuentra la bicicleta |
-| lng | Double | Longitud donde se encuentra la bicicleta |
-
-JSON de ejemplo:
-  
-```JSON
-{
-"id":5,
-"color":"rojo",
-"modelo":"urbana",
-"lat":-41.133968,
-"lng": -71.314426
-}
-```
-
-Respuesta del metodo POST, es un _JSON_STATUS_OK__(_200)_, con la información de la bicicleta ingresada al sistema
-
-##### PATCH (Update) 
-
-##### Actualizar  bicicleta del sistema:
-
-* `PATCH http://host:3000/api/bicicletas/update`
-
-Todos los campos son obligatorios
-
-| Campo | Tipo | Descripción |
-|:---|:---:| --- |
-| id | Int | Número de identificación |
-| color | String | Color de la bicicleta|
-| modelo | String | Modelo de bicicleta |
-| lat | Double | Latitud donde se encuentra la bicicleta |
-| lng | Double | Longitud donde se encuentra la bicicleta |
-
-JSON de ejemplo:
-  
-```JSON
-{
-"id":5,
-"color":"rojo",
-"modelo":"urbana",
-"lat":-41.133968,
-"lng": -71.314426
-}
-```
-Respuesta del metodo PATCH, es un _JSON_STATUS_OK_ 200, con la información de la bicicleta actualizada
-
 ## Testing
 El testing de la aplicación se realiza con la dependencia _Jasmine_, la misma se instala al ejecutar el comando indicado en el módulo de **Instalación**. Se cuenta con dos opciones para correr los tests realizados sobre los _ENDPOINT_.
 Ejecutar todos los tests automaticamente.
+
 ```
 	npm test
 ```
+
 Ejecutar test indivudualmente, los mismos se encutran dentro de la carpeta _/spec_, cada uno con su correspondiente nombre.
 A continuación se lista los tests disponibles dentro del proyecto.
 ```
