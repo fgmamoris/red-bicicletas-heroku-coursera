@@ -22,10 +22,7 @@ Instala todas las dependencias de nodejs en el proyecto.
 
 Ejecuta la dependencia nodemon en modo dev.
 El script *"devstart"* se encuentra configurado en el archivo package.json del proyecto
-```
-	npm test
-```
-Ejecuta todos los test del sistema, segun lo solicitado en el módulo 2.
+
 
 ## Bicicletas Web
 
