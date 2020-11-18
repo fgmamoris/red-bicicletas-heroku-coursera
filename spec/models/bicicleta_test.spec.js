@@ -100,11 +100,11 @@ describe("Testing Bicicletas", function () {
           color: "Azul",
           modelo: "Urbana",
         });
-        Bicicleta.add(aBici2, function (err, newBici) {
+        Bicicleta.add(aBici2, function (err) {
           if (err) console.log(err);
           Bicicleta.allBicis(function (err, bicis) {
             expect(bicis.length).toEqual(2);
-            Bicicleta.removeByCode(1, function (err, newBici) {
+            Bicicleta.deleteByCode(1, function (err) {
               if (err) console.log(err);
               Bicicleta.allBicis(function (err, bicis) {
                 expect(bicis.length).toEqual(1);

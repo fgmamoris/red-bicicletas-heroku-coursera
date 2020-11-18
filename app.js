@@ -10,6 +10,7 @@ var usersRouter = require("./routes/users");
 var bicicletasRouter = require("./routes/bicicletas");
 var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");
+var reservasApiRouter = require("./routes/api/reservas");
 
 var app = express();
 var mongoose = require("mongoose");
@@ -36,6 +37,7 @@ app.use("/users", usersRouter);
 app.use("/bicicletas", bicicletasRouter);
 app.use("/api/bicicletas", bicicletasApiRouter);
 app.use("/api/usuarios", usuariosApiRouter);
+app.use("/api/usuarios/reservas", reservasApiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

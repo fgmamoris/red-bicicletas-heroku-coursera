@@ -11,7 +11,6 @@ router.get("/", bicicletaControllerApi.bicicleta_list);
 router.post("/create", bicicletaControllerApi.bicicleta_create);
 router.delete("/delete", bicicletaControllerApi.bicicleta_delete);
 router.patch("/update", bicicletaControllerApi.bicicleta_update);
-//router.delete("/delete", bicicletaControllerApi.bicicleta_delete);
-//router.patch("/update", bicicletaControllerApi.bicicleta_update);
+
 
 module.exports = router;

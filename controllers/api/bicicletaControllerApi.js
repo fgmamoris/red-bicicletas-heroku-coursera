@@ -13,27 +13,25 @@ exports.bicicleta_list = function (req, res) {
 };
 
 exports.bicicleta_create = function (req, res) {
-  console.log(req.body);
-  // var bici2 = Bicicleta.createInstance(10,
-  //   req.body.color,
-  //   req.body.modelo);
-  //   console.log(bici2);
+  // var bici = Bicicleta.createInstance({
+  //   code: req.body.code,
+  //   color: req.body.color,
+  //   modelo: req.body.modelo,
+  // });
   var bici = new Bicicleta({
     code: req.body.code,
     color: req.body.color,
     modelo: req.body.modelo,
   });
   bici.ubicacion = [req.body.lat, req.body.lng];
-  console.log(bici);
   Bicicleta.add(bici, function (err, bici2) {
+    if (err) return res.status(500).json(err);
     res.status(200).json({ bicicleta: bici2 });
   });
 };
 exports.bicicleta_update = function (req, res) {
-  console.log(req.body);
   Bicicleta.findByCode(req.body.code, function (err, bici) {
     //BICI Y ERR SON LOS DOS POSIBLES DATOS DE SALIDA DEL METODO FINDBYCODE Y PASAN COMO ENTRADA DEL CALLBACK
-    console.log(bici);
     if (err) {
       return res
         .status(404)
@@ -45,7 +43,6 @@ exports.bicicleta_update = function (req, res) {
         modelo: req.body.modelo,
       });
       bici.ubicacion = [req.body.lat, req.body.lng];
-      console.log(bici);
       Bicicleta.update(bici, function (err, bici) {
         res.status(200).json({ bicicleta: bici });
       });
@@ -54,7 +51,6 @@ exports.bicicleta_update = function (req, res) {
 };
 
 exports.bicicleta_delete = function (req, res) {
-  console.log(req.body);
   Bicicleta.findByCode(req.body.code, function (err, bici) {
     //BICI Y ERR SON LOS DOS POSIBLES DATOS DE SALIDA DEL METODO FINDBYCODE Y PASAN COMO ENTRADA DEL CALLBACK
     if (err) {
@@ -62,7 +58,7 @@ exports.bicicleta_delete = function (req, res) {
         .status(404)
         .json({ error: ["Error bici no encontrada en el sistema", error] });
     } else {
-      Bicicleta.deleteByCode(bici.code, function (err, bici) {
+      Bicicleta.deleteByCode(bici.code, function (err) {
         res.status(204).json();
       });
     }

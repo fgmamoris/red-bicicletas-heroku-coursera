@@ -28,7 +28,16 @@ bicicletaSchema.statics.createInstance = function (
 
 //Metodo de instancias, responde a la instancia de este esquema
 bicicletaSchema.methods.toString = function () {
-  return "code: " + this.code + "| color: " + this.color;
+  return (
+    "code: " +
+    this.code +
+    "\n color: " +
+    this.color +
+    "\n modelo: " +
+    this.modelo +
+    "\n ubicacion: " +
+    this.ubicacion
+  );
 };
 
 //Agrego metodo estatico agreo el metodo directamente al modelo

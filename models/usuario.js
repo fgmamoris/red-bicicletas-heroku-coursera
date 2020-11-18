@@ -13,8 +13,23 @@ usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
     desde: desde,
     hasta: hasta,
   });
-  console.log(reserva);
+
   reserva.save(cb);
+};
+
+usuarioSchema.statics.allUsuarios = function (cb) {
+  return this.find({}, cb);
+};
+
+usuarioSchema.statics.add = function (aUsuario, cb) {
+  this.create(aUsuario, cb);
+};
+
+usuarioSchema.statics.findByNombre = function (aNombre, cb) {
+  return this.findOne({ nombre: aNombre }, cb);
+};
+usuarioSchema.statics.deleteByNombre = function (aNombre, cb) {
+  this.deleteOne({ nombre: aNombre }, cb);
 };
 
 module.exports = mongoose.model("Usuario", usuarioSchema);
