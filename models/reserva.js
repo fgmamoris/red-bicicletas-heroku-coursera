@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
-var moment = require("moment");
-var Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const moment = require("moment");
+const Schema = mongoose.Schema;
 
 var reservaSchema = new Schema({
   desde: Date,

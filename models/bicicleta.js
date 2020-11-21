@@ -1,5 +1,5 @@
-var moongose = require("mongoose");
-var Schema = moongose.Schema;
+const moongose = require("mongoose");
+const Schema = moongose.Schema;
 
 var bicicletaSchema = new Schema({
   code: Number,
