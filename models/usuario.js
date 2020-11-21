@@ -38,6 +38,7 @@ var usuarioSchema = new Schema({
   },
 });
 
+//Le incorporo a mongoose la libreria de uniqueValidator
 usuarioSchema.plugin(uniqueValidator, {
   message: "El {PATH} ya existe con otro usuario",
 });
