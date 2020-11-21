@@ -6,11 +6,12 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
-var usersRouter = require("./routes/users");
+var usersRouter = require("./routes/uusuarios");
 var bicicletasRouter = require("./routes/bicicletas");
 var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");
 var reservasApiRouter = require("./routes/api/reservas");
+var tokenController = require("./routes/token");
 
 var app = express();
 var mongoose = require("mongoose");
@@ -33,11 +34,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/express", indexExpress);
-app.use("/users", usersRouter);
+app.use("/usuarios", usersRouter);
 app.use("/bicicletas", bicicletasRouter);
 app.use("/api/bicicletas", bicicletasApiRouter);
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
+app.use("/token", tokenController);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const usuarioController = require('../controllers/usuarioController');
 
 /* GET users listing. */
 router.get("/", usuarioControllerApi.usuarios_list);

@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 const bcrypt = required("bcrypt");
 const saltRounds = 10; //Da aleatoreadad a la encriptacion
 const uniqueValidator = require("mongoose-unique-validator");
+const crypto = require("crypto");
+const mailer = require('../mailer/mailer');
 
 const validateEmail = function (email) {
   //Regex, expresion regular
@@ -67,6 +69,50 @@ usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
   reserva.save(cb);
 };
 
+usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
+  const token = new Token({
+    usuario: this.id,
+    token: crypto.randomBytes(16).toString("hex"), //Creamos un string en hexadecimal
+  });
+  const email_destination = this.email;
+
+  token.save(function (err) {
+    if (err) {
+      return console.log(err.message);
+    }
+
+    const mailOptions = {
+      from: "no-reply@redbicicletas.com",
+      to: email_destination,
+      subject: "Verificación de Cuenta",
+      text:
+        "Hola,\n\n" +
+        "Por favor, para verificar su cuenta haga click en este link:\n\n" +
+        process.env.HOST +
+        "/token/confirmation/" +
+        token.token +
+        ".\n",
+      html:
+        "Hola,<br><br>" +
+        "Por favor, para verificar su cuenta haga click en este link:<br><br>" +
+        '<a href="' +
+        "http://localhost:3000" +
+        //process.env.HOST +
+        "/token/confirmation/" +
+        token.token +
+        '" target="_blank">Activar Usuario</a>.<br>',
+    };
+
+    mailer.sendMail(mailOptions, function (err) {
+      if (err) {
+        return console.log(err.message);
+      }
+      console.log(
+        "Se ha enviado un email de verificación a " + email_destination + "."
+      );
+    });
+  });
+};
 usuarioSchema.statics.allUsuarios = function (cb) {
   return this.find({}, cb);
 };
