@@ -3,6 +3,7 @@ const Reserva = require("../models/reserva");
 const Schema = mongoose.Schema;
 const bcrypt = required("bcrypt");
 const saltRounds = 10; //Da aleatoreadad a la encriptacion
+const uniqueValidator = require("mongoose-unique-validator");
 
 const validateEmail = function (email) {
   //Regex, expresion regular
@@ -23,6 +24,7 @@ var usuarioSchema = new Schema({
     lowercase: true, //Guarda todo en mminuscula
     validate: [validateEmail, "Por favor ingrese un email valido"], // validate pertenece a mongoose
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/],
+    unique: true,
   },
   password: {
     type: String,
@@ -36,6 +38,10 @@ var usuarioSchema = new Schema({
   },
 });
 
+usuarioSchema.plugin(uniqueValidator, {
+  message: "El {PATH} ya existe con otro usuario",
+});
+
 //Function pre Antes de guardar(persistir en la bbdd) ejecuta la callback
 usuarioSchema.pre("save", function (next) {
   if (this.isModified("password")) {
@@ -46,7 +52,7 @@ usuarioSchema.pre("save", function (next) {
 
 //Verifico la veracidad del password
 usuarioSchema.methods.validPassword = function (password) {
-  return bcrypt.compareSync(password, this.password);//encripto y comparo con el password que tengo en la bbdd
+  return bcrypt.compareSync(password, this.password); //encripto y comparo con el password que tengo en la bbdd
 };
 
 usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
