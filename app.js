@@ -17,6 +17,7 @@ var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");
 var reservasApiRouter = require("./routes/api/reservas");
 var tokenController = require("./routes/token");
+const authControllerApiRouter = require("./routes/api/auth");
 
 /*
 Guarda el store en memoria del servidor, si el servidor se resetea 
@@ -28,10 +29,10 @@ const store = new session.MemoryStore();
 var app = express();
 
 //Seteo la secret_key
-app.set('secret-key', 'jwt_pwd_!!223344');
-
+app.set("secret_key", "jwt_pwd_!!223344");
 
 var mongoose = require("mongoose");
+const authControllerApi = require("./controllers/api/authControllerApi");
 /*CONEXION BD */
 var mongoDB = "mongodb://localhost/red_bicicletas";
 mongoose.connect(mongoDB, {
@@ -171,6 +172,7 @@ app.use("/api/bicicletas", validarUsuario, bicicletasApiRouter); // jwt para api
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
 app.use("/token", tokenController);
+app.use("/api/auth", authControllerApiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -200,12 +202,12 @@ function loggedIn(req, res, next) {
 function validarUsuario(req, res, next) {
   jwt.verify(
     req.headers["x-access-token"], //Atributo en el header
-    req.app.get("secretKey"), //Toma la secret key que cifra el token
+    req.app.get("secret_key"), //Toma la secret key que cifra el token
     function (err, decoded) {
       if (err) {
         res.json({ status: "error", message: err.message, data: null });
       } else {
-        req.body.userId = decoded.id;//Descifro el token,luego lo cifro y lo envio en el payload
+        req.body.userId = decoded.id; //Descifro el token,luego lo cifro y lo envio en el payload
         console.log("JWT Verify: " + decoded);
         next();
       }
