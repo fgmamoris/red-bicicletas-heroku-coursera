@@ -3,8 +3,8 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-const passport = require ('./config/passport');
-const session = require('express-session')
+const passport = require("./config/passport");
+const session = require("express-session");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
@@ -20,7 +20,7 @@ Guarda el store en memoria del servidor, si el servidor se resetea
 se borran los datos de session de los usuarios logeados y 
 redirije a login 
 */
-const store = new session.MemoryStore; 
+const store = new session.MemoryStore();
 
 var app = express();
 var mongoose = require("mongoose");
@@ -37,43 +37,50 @@ app.set("view engine", "pug");
 /*
 Configuracion de la cookie de la session
 */
-app.use(session({
-  cookie: {maxAge: 240*60*1000},//10 dias para que expire la session
-  store: store,
-  saveUninitialized: true,
-  resave:'true',
-  secret: 'red_bici_!_12_1!´',//Genera la insciptacion de la session de la cookie
-}));
+app.use(
+  session({
+    cookie: { maxAge: 240 * 60 * 1000 }, //10 dias para que expire la session
+    store: store,
+    saveUninitialized: true,
+    resave: "true",
+    secret: "red_bici_!_12_1!´", //Genera la insciptacion de la session de la cookie
+  })
+);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-/*Configuracion de session en el servidor, inicializado 
-*/
-app.use(passport.inicialized());
+/*Configuracion de session en el servidor, inicializado
+ */
+app.use(passport.initialize());
 app.use(passport.session());
 //************ */
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get('/login', function(req,res){
-  res.render('session/login');
+app.get("/login", function (req, res) {
+  res.render("session/login");
 });
 
-app.post('/login', function(req, res){
-//passport
+app.post("/login", function (req, res, next) {
+  passport.authenticate("local", function (err, user, info) {
+    if (err) return next(err);
+    /*Si no existe usuario redirijo a login con la info */
+    if (!user) return res.render("session/login", { info });
+    req.logIn(user, function (err) {
+      if (err) return next(err);
+      return res.redirect("/");
+    });
+  })(req, res, next); //Le paso los parametros ala funtion de passport authenticate, y ejecuta la estrategia
+  //para validar el usuario
 });
 
-app.get('/logut', function(req,res){
-
-  res.redirect('/');
+app.get("/logut", function (req, res) {
+  req.logout();
+  res.redirect("/");
 });
 
-app.get('forgotPassword', function(req, res){
-
-});
-app.post('forgotPassword', function(req, res){
-  
-})
+app.get("forgotPassword", function (req, res) {});
+app.post("forgotPassword", function (req, res) {});
 
 app.use("/", indexRouter);
 app.use("/express", indexExpress); //Deja de utilizarlo luego de token
