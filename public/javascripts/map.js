@@ -11,7 +11,7 @@ $.ajax({
   success: function (result) {
     console.log(result);
     result.bicicletas.forEach((bici) => {
-      L.marker(bici.ubicacion, { titlte: bici.id }).addTo(map);
+      L.marker(bici.ubicacion, { title:'Bicicleta' + bici.code }).addTo(map);
     });
   },
 });

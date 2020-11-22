@@ -7,6 +7,7 @@ const passport = require("./config/passport");
 const session = require("express-session");
 const Usuario = require("./models/usuario");
 const Token = require("./models/token");
+const jwt = require("jsonwebtoken");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
@@ -25,6 +26,11 @@ redirije a login
 const store = new session.MemoryStore();
 
 var app = express();
+
+//Seteo la secret_key
+app.set('secret-key', 'jwt_pwd_!!223344');
+
+
 var mongoose = require("mongoose");
 /*CONEXION BD */
 var mongoDB = "mongodb://localhost/red_bicicletas";
@@ -158,9 +164,10 @@ app.post("/resetPassword", function (req, res) {
 app.use("/", indexRouter);
 app.use("/express", indexExpress); //Deja de utilizarlo luego de token
 app.use("/usuarios", usersRouter);
-app.use("/bicicletas", bicicletasRouter); //Securizo la ruta
-//app.use("/bicicletas", loggedIn, bicicletasRouter); //Securizo la ruta
-app.use("/api/bicicletas", bicicletasApiRouter);
+//app.use("/bicicletas", bicicletasRouter); //Sin sec la ruta por default
+app.use("/bicicletas", loggedIn, bicicletasRouter); //Securizo la ruta
+//app.use("/api/bicicletas",  bicicletasApiRouter);// Sin aute jwt
+app.use("/api/bicicletas", validarUsuario, bicicletasApiRouter); // jwt para api
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
 app.use("/token", tokenController);
@@ -189,6 +196,21 @@ function loggedIn(req, res, next) {
     console.log("Usuario sin loguearse");
     res.redirect("/login");
   }
+}
+function validarUsuario(req, res, next) {
+  jwt.verify(
+    req.headers["x-access-token"], //Atributo en el header
+    req.app.get("secretKey"), //Toma la secret key que cifra el token
+    function (err, decoded) {
+      if (err) {
+        res.json({ status: "error", message: err.message, data: null });
+      } else {
+        req.body.userId = decoded.id;//Descifro el token,luego lo cifro y lo envio en el payload
+        console.log("JWT Verify: " + decoded);
+        next();
+      }
+    }
+  );
 }
 
 module.exports = app;
