@@ -46,6 +46,7 @@ bicicletaSchema.statics.allBicis = function (cb) {
 };
 
 bicicletaSchema.statics.add = function (aBici, cb) {
+  console.log(aBici);
   this.create(aBici, cb);
 };
 bicicletaSchema.statics.findByCode = function (aCode, cb) {
@@ -57,7 +58,9 @@ bicicletaSchema.statics.findById = function (aId, cb) {
 bicicletaSchema.statics.deleteByCode = function (aCode, cb) {
   this.deleteOne({ code: aCode }, cb);
 };
-
+bicicletaSchema.statics.deleteById = function (aId, cb) {
+  this.findOneAndRemove({ _id: aId }, cb);
+};
 // bicicletaSchema.statics.removeByCode = function (aId, cb) {
 //   return this.deleteOne({ _id: aId }, cb);
 // };
@@ -72,7 +75,7 @@ bicicletaSchema.statics.deleteByCode = function (aCode, cb) {
 // };
 
 bicicletaSchema.statics.update = function (aBici, cb) {
-  return this.findOneAndUpdate(
+  return this.updateOne(
     { code: aBici.code },
     {
       $set: {
@@ -85,6 +88,7 @@ bicicletaSchema.statics.update = function (aBici, cb) {
     cb
   );
 };
+
 module.exports = moongose.model("Bicicleta", bicicletaSchema);
 
 /*var Bicicleta = function (id, color, modelo, ubicacion) {

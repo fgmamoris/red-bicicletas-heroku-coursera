@@ -5,6 +5,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const passport = require("./config/passport");
 const session = require("express-session");
+const Usuario = require("./models/usuario");
+const Token = require("./models/token");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
@@ -26,7 +28,11 @@ var app = express();
 var mongoose = require("mongoose");
 /*CONEXION BD */
 var mongoDB = "mongodb://localhost/red_bicicletas";
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(mongoDB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "Mongo DB conection error: "));
@@ -34,6 +40,8 @@ db.on("error", console.error.bind(console, "Mongo DB conection error: "));
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
+/*Deprecation findOneAndUpdate*/
+mongoose.set("useFindAndModify", false);
 /*
 Configuracion de la cookie de la session
 */
@@ -74,18 +82,84 @@ app.post("/login", function (req, res, next) {
   //para validar el usuario
 });
 
-app.get("/logut", function (req, res) {
-  req.logout();
+app.get("/logout", function (req, res) {
+  req.logOut();
   res.redirect("/");
 });
 
-app.get("forgotPassword", function (req, res) {});
-app.post("forgotPassword", function (req, res) {});
+app.get("/forgotPassword", function (req, res) {
+  res.render("session/forgotPassword");
+});
+
+app.post("/forgotPassword", function (req, res, next) {
+  Usuario.findOne({ email: req.body.email }, function (err, usuario) {
+    if (!usuario) {
+      return res.render("session/forgotPassword", {
+        info: { message: "No existe el email para el usuario existente" },
+      });
+    }
+    usuario.resetPassword(function (err) {
+      if (err) return next(err);
+      console.log("session/forgotPasswordMessage");
+    });
+    res.render("session/forgotPasswordMessage");
+  });
+});
+
+app.get("/resetPassword/:token", function (req, res, next) {
+  Token.findOne({ token: req.params.token }, function (err, token) {
+    if (!token) {
+      return res.status(400).send({
+        type: "not-verified",
+        msg:
+          "No existe usuario asociado al token. Verifique que su token no haya expirado",
+      });
+    }
+    Usuario.findById(token._userId, function (err, usuario) {
+      if (!usuario) {
+        return res.status(400).send({
+          msg: "No existe un usuario asociado al token",
+        });
+      }
+      res.render("session/resetPassword", { errors: {}, usuario: usuario });
+    });
+  });
+});
+
+app.post("/resetPassword", function (req, res) {
+  if (req.body.password != req.body.confirm_password) {
+    res.render("session/resetPassword", {
+      errors: {
+        confirm_password: {
+          message: "No coincide con el password ingresado",
+        },
+      },
+      usuario: new Usuario({ email: req.body.email }),
+    });
+    return;
+  }
+
+  Usuario.findOne({ email: req.body.email }, function (err, usuario) {
+    usuario.password = req.body.password;
+
+    usuario.save(function (err) {
+      if (err) {
+        res.render("session/resetPassword", {
+          errors: err.errors,
+          usuario: new Usuario({ email: req.body.email }),
+        });
+      } else {
+        res.redirect("/login");
+      }
+    });
+  });
+});
 
 app.use("/", indexRouter);
 app.use("/express", indexExpress); //Deja de utilizarlo luego de token
 app.use("/usuarios", usersRouter);
-app.use("/bicicletas", bicicletasRouter);
+app.use("/bicicletas", bicicletasRouter); //Securizo la ruta
+//app.use("/bicicletas", loggedIn, bicicletasRouter); //Securizo la ruta
 app.use("/api/bicicletas", bicicletasApiRouter);
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
@@ -106,5 +180,15 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+function loggedIn(req, res, next) {
+  /*Identifica si la session esta guardado en el middelware */
+  if (req.user) {
+    next();
+  } else {
+    console.log("Usuario sin loguearse");
+    res.redirect("/login");
+  }
+}
 
 module.exports = app;

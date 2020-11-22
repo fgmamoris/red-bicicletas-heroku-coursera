@@ -48,7 +48,6 @@ usuarioSchema.plugin(uniqueValidator, {
 
 //Function pre Antes de guardar(persistir en la bbdd) ejecuta la callback
 usuarioSchema.pre("save", function (next) {
-  console.log("pre");
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, saltRounds);
   }
@@ -72,7 +71,6 @@ usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
 };
 
 usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
-  console.log("enviar mail");
   const token = new Token({
     _userId: this.id,
     token: crypto.randomBytes(16).toString("hex"), //Creamos un string en hexadecimal
@@ -94,7 +92,7 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
         //process.env.HOST +
         "/token/confirmation/" +
         token.token +
-        '\n',
+        "\n",
       html:
         "Hola,<br><br>" +
         "Por favor, para verificar su cuenta haga click en este link:<br><br>" +
@@ -107,15 +105,57 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
     };
 
     mailer.sendMail(mailOptions, function (err) {
-      console.log(mailOptions);
       if (err) {
-        console.log("Error");
         return console.log(err.message);
       }
       console.log(
         "Se ha enviado un email de verificación a " + email_destination + "."
       );
     });
+  });
+};
+
+usuarioSchema.methods.resetPassword = function (cb) {
+  const token = new Token({
+    _userId: this.id,
+    token: crypto.randomBytes(16).toString("hex"),
+  });
+  const email_destination = this.email;
+  token.save(function (err) {
+    if (err) return cb(err);
+
+    const mailOptions = {
+      from: "no-reply@redbicicletas.com",
+      to: email_destination,
+      subject: "Reseteo de Password de Cuenta",
+      text:
+        "Hola,\n\n" +
+        "Por favor, para resetear el password de su cuenta haga click en este link:\n\n" +
+        "http://localhost:3000" +
+        //process.env.HOST +
+        "/resetPassword/" +
+        token.token +
+        ".\n",
+      html:
+        "Hola,<br><br>" +
+        "Por favor, para resetear el password de su cuenta haga click en este link:<br><br>" +
+        '<a href="' +
+        "http://localhost:3000" +
+        //   process.env.HOST +
+        "/resetPassword/" +
+        token.token +
+        '" target="_blank">Restablecer Contraseña</a>.<br>',
+    };
+
+    mailer.sendMail(mailOptions, function (err) {
+      if (err) return cb(err);
+      console.log(
+        "Se envió un email para restablecer contraseña a " +
+          email_destination +
+          "."
+      );
+    });
+    cb(null);
   });
 };
 
