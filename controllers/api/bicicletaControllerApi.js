@@ -59,7 +59,13 @@ exports.bicicleta_delete = function (req, res) {
         .json({ error: ["Error bici no encontrada en el sistema", error] });
     } else {
       Bicicleta.deleteByCode(bici.code, function (err) {
-        res.status(204).json();
+        if (err) {
+          return res
+            .status(404)
+            .json({ error: ["Error bici no encontrada en el sistema", error] });
+        } else {
+          res.status(204).json();
+        }
       });
     }
   });

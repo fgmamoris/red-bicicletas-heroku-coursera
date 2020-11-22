@@ -9,7 +9,6 @@ exports.reservas_list = function (req, res) {
 };
 
 exports.reservas_delete = function (req, res) {
-  console.log(req.body);
   const reservaDelete = new Reserva({
     usuario: req.body.usuario,
     bicicleta: req.body.bicicleta,

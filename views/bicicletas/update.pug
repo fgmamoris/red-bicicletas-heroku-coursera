@@ -8,9 +8,12 @@ block content
   h1 Actualizando Bicicleta
   br
   br
-  form(action=`/bicicletas/${bici.id}/update` method = 'post')
+  form(action=`/bicicletas/${bici.code}/update` method = 'post')
     label(for="id") ID:
     input#id(type='text' name='id', value = bici.id)
+    br
+    label(for="code") CODE:
+    input#id(type='text' name='code', value = bici.code)
     br
     label(for="color") Color:
     input#color(type='text' name='color',value = bici.color)
