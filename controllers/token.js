@@ -11,7 +11,7 @@ module.exports = {
             "No se encontró un usuario con éste token. Quizas haya expirado y deba solicitarlo nuevamente.",
         });
       }
-      Usuario.findById(token.usuario, function (err, usuario) {
+      Usuario.findById(token._userId, function (err, usuario) {
         if (!usuario) {
           return res.status(400).send({
             msg: "No se encontró un usuario con éste token.",
@@ -25,7 +25,7 @@ module.exports = {
           if (err) {
             return res.status(500).send({ msg: err.message });
           }
-          res.redirect("/");
+          res.redirect("/usuarios");
         });
       });
     });

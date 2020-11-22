@@ -3,13 +3,12 @@ var router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 
 /* GET users listing. */
-router.get("/", usuarioControllerApi.usuarios_list);
-router.get("/create", usuarioControllerApi.usuarios_create_get);
-router.post("/create", usuarioControllerApi.usuarios_create);
-router.get("/:id/update", usuarioControllerApi.usuarios_update_get);
-router.post("/:id/update", usuarioControllerApi.usuarios_update);
-router.delete("/delete_usuario", usuarioControllerApi.usuarios_delete);
-// router.delete("/:id/delete", usuarioControllerApi.usuarios_delete);
-router.post("/reservar", usuarioControllerApi.usuarios_reservar);
+router.get("/", usuarioController.list);
+router.get("/create", usuarioController.create_get);
+router.post("/create", usuarioController.create);
+router.get("/:id/update", usuarioController.update_get);
+router.post("/:id/update", usuarioController.update);
+router.post("/:id/delete", usuarioController.delete);
+
 
 module.exports = router;

@@ -2,16 +2,19 @@ const { render } = require("pug");
 const Usuario = require("../models/usuario");
 
 module.exports = {
+  
   list: function (req, res, next) {
     Usuario.find({}, (err, usuarios) => {
       res.render("usuarios/index", { usuarios: usuarios });
     });
   },
+
   update_get: function (req, res, next) {
     Usuario.findById(req.params.id, (err, usuario) => {
       res.render("usuarios/update", { errors: {}, usuario: usuario });
     });
   },
+
   update: function (req, res, next) {
     const update_values = { nombre: req.body.nombre };
     Usuario.findByIdAndUpdate(req.params.id, update_values, (err, usuario) => {
@@ -24,14 +27,16 @@ module.exports = {
           }),
         });
       } else {
-        res.redirecct("usuarios");
+        res.redirect("/usuarios");
         return;
       }
     });
   },
+
   create_get: function (req, res, next) {
     res.render("usuarios/create", { errors: {}, usuario: new Usuario() });
   },
+
   create: function (req, res, next) {
     if (req.body.password != req.body.confirm_password) {
       res.render("usuarios/create", {
@@ -62,12 +67,13 @@ module.exports = {
           });
         } else {
           nuevoUsuario.enviar_email_bienvenida();
-          res.redirecct("/usuarios");
+          console.log("mensaje enviado");
+          res.redirect("/usuarios");
         }
       }
     );
   },
-  usuario_delete = function (req, res, next) {
+  delete: function (req, res, next) {
     Usuario.findByIdAndDelete(req.body.id, function (err, usuario) {
       if (err) {
         next(err);
@@ -76,5 +82,5 @@ module.exports = {
         return;
       }
     });
-  }
-}
+  },
+};

@@ -6,7 +6,7 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
-var usersRouter = require("./routes/uusuarios");
+var usersRouter = require("./routes/usuarios");
 var bicicletasRouter = require("./routes/bicicletas");
 var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");

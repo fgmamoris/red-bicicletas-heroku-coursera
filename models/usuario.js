@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const Reserva = require("../models/reserva");
 const Schema = mongoose.Schema;
-const bcrypt = required("bcrypt");
+const bcrypt = require("bcrypt");
 const saltRounds = 10; //Da aleatoreadad a la encriptacion
 const uniqueValidator = require("mongoose-unique-validator");
 const crypto = require("crypto");
-const mailer = require('../mailer/mailer');
+const mailer = require("../mailer/mailer");
+const Token = require("../models/token");
 
 const validateEmail = function (email) {
   //Regex, expresion regular
@@ -47,6 +48,7 @@ usuarioSchema.plugin(uniqueValidator, {
 
 //Function pre Antes de guardar(persistir en la bbdd) ejecuta la callback
 usuarioSchema.pre("save", function (next) {
+  console.log("pre");
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, saltRounds);
   }
@@ -70,17 +72,17 @@ usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
 };
 
 usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
+  console.log("enviar mail");
   const token = new Token({
-    usuario: this.id,
+    _userId: this.id,
     token: crypto.randomBytes(16).toString("hex"), //Creamos un string en hexadecimal
   });
   const email_destination = this.email;
-
+  //Persistencia del token
   token.save(function (err) {
     if (err) {
       return console.log(err.message);
     }
-
     const mailOptions = {
       from: "no-reply@redbicicletas.com",
       to: email_destination,
@@ -88,10 +90,11 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
       text:
         "Hola,\n\n" +
         "Por favor, para verificar su cuenta haga click en este link:\n\n" +
-        process.env.HOST +
+        "http://localhost:3000" +
+        //process.env.HOST +
         "/token/confirmation/" +
         token.token +
-        ".\n",
+        '\n',
       html:
         "Hola,<br><br>" +
         "Por favor, para verificar su cuenta haga click en este link:<br><br>" +
@@ -104,7 +107,9 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
     };
 
     mailer.sendMail(mailOptions, function (err) {
+      console.log(mailOptions);
       if (err) {
+        console.log("Error");
         return console.log(err.message);
       }
       console.log(
@@ -113,6 +118,7 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
     });
   });
 };
+
 usuarioSchema.statics.allUsuarios = function (cb) {
   return this.find({}, cb);
 };
