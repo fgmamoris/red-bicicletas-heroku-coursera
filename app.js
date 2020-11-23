@@ -1,3 +1,4 @@
+require('dontenv').config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -33,8 +34,9 @@ app.set("secret_key", "jwt_pwd_!!223344");
 
 var mongoose = require("mongoose");
 const authControllerApi = require("./controllers/api/authControllerApi");
-/*CONEXION BD */
-var mongoDB = "mongodb://localhost/red_bicicletas";
+
+/*CONEXION BD ATLAS*/
+const mongoDB = process.env.MONGO_URI;
 mongoose.connect(mongoDB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
