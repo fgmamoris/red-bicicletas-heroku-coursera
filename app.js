@@ -9,6 +9,7 @@ const session = require("express-session");
 const Usuario = require("./models/usuario");
 const Token = require("./models/Token");
 const jwt = require("jsonwebtoken");
+const MongoDBStore = require('connect-mongodb-session')('session');
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
@@ -25,7 +26,23 @@ Guarda el store en memoria del servidor, si el servidor se resetea
 se borran los datos de session de los usuarios logeados y 
 redirije a login 
 */
-const store = new session.MemoryStore();
+//const store = new session.MemoryStore();
+/*Para saber en que ambiente me encuentro, si estoy en local, utilizo el memorystore
+y sino utilizo*/
+
+let store;
+
+if (process.env.NODE_ENV === "development") {
+  store = new session.MemoryStore();
+} else {
+  store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: "sessions",
+  });
+  store.on("error", function (err) {
+    assert.ifError(err);
+    assert.ok(false);
+  });
 
 var app = express();
 
@@ -57,7 +74,7 @@ Configuracion de la cookie de la session
 app.use(
   session({
     cookie: { maxAge: 240 * 60 * 1000 }, //10 dias para que expire la session
-    store: store,
+    store: store, //Depende del ambiente donde me encuentre, local o produccion
     saveUninitialized: true,
     resave: "true",
     secret: "red_bici_!_12_1!´", //Genera la insciptacion de la session de la cookie
@@ -150,7 +167,6 @@ app.post("/resetPassword", function (req, res) {
 
   Usuario.findOne({ email: req.body.email }, function (err, usuario) {
     usuario.password = req.body.password;
-
     usuario.save(function (err) {
       if (err) {
         res.render("session/resetPassword", {
@@ -178,8 +194,8 @@ app.use("/api/auth", authControllerApiRouter);
 
 /* Ruta de verificacion de google*/
 app.use("/google2c62cf146c084933.html", function (req, res, next) {
- //res.sendFile ;
- res.sendFile('public/google2c62cf146c084933.html');
+  //res.sendFile ;
+  res.sendFile("public/google2c62cf146c084933.html");
 });
 
 // catch 404 and forward to error handler
@@ -222,5 +238,25 @@ function validarUsuario(req, res, next) {
     }
   );
 }
-
+/*Para utilizar passsport-oauth20*/
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/plus.profile.emails.read",
+      "profile",
+      "email",
+    ],
+  })
+);
+/*Callback de redireccionar al usuario, luego de la autenticacion
+*/
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/error",
+  })
+);
 module.exports = app;

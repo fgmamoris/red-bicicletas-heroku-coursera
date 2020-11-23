@@ -20,6 +20,62 @@ passport.use(
   })
 );
 
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.HOST + "/auth/google/callback",
+    },
+
+    function (accessToken, refreshToken, profile, cb) {
+      console.log(profile);
+
+      Usuario.findOneOrCreateByGoogle(profile, function (err, user) {
+        return cb(err, user);
+      });
+    }
+  )
+);
+/*Estrategia de google passport*/ 
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.HOST + "/auth/google/callback",
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      //Profile trae todos los datos de cuenta
+      console.log(profile);
+      Usuario.findOneOrCreateByGoogle(profile, function (err, user) {
+        return cb(err, user);
+      });
+    }
+  )
+);
+/*Estrategia de google passport*/ 
+passport.use(
+  new FacebookTokenStrategy(
+    {
+      clientID: process.env.FACEBOOK_ID,
+      clientSecret: process.env.FACEBOOK_SECRET,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      try {
+        Usuario.findOneOrCreateByFacebook(profile, function (err, user) {
+          if (err) {
+            console.log("Error: " + err);
+          }
+          return done(err, user);
+        });
+      } catch (error) {
+        console.log(error);
+        return done(error, null);
+      }
+    }
+  )
+);
 passport.serializeUser(function (user, done) {
   done(null, user.id);
 });
