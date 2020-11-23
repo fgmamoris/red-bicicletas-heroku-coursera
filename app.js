@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -175,6 +175,12 @@ app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
 app.use("/token", tokenController);
 app.use("/api/auth", authControllerApiRouter);
+
+/* Ruta de verificacion de google*/
+app.use("/google2c62cf146c084933.html", function (req, res, next) {
+ //res.sendFile ;
+ res.sendFile('public/google2c62cf146c084933.html');
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
