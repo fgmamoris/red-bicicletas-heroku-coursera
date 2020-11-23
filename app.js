@@ -3,10 +3,10 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-const passport = require("./config/passport");
+const passport = require("../red-bicicletas-heroku/config/passport");
 const session = require("express-session");
-const Usuario = require("./models/usuario");
-const Token = require("./models/token");
+const Usuario = require("../models/usuario");
+const Token = require("../models/token");
 const jwt = require("jsonwebtoken");
 
 var indexRouter = require("./routes/index");
