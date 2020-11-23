@@ -1,4 +1,4 @@
-require('dontenv').config();
+require('dotenv').config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -36,7 +36,7 @@ var mongoose = require("mongoose");
 const authControllerApi = require("./controllers/api/authControllerApi");
 
 /*CONEXION BD ATLAS*/
-const mongoDB = process.env.MONGO_URI;
+const mongoDB = process.env.MONGO_URI; //Esto permite que cuando se deplye en heroku, este ultimo busque la variable de ambiente definida en la plataforma
 mongoose.connect(mongoDB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
