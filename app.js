@@ -30,7 +30,7 @@ const store = new session.MemoryStore();
 var app = express();
 
 //Seteo la secret_key
-app.set("secret_key", "jwt_pwd_!!223344");
+app.set("secretKey", "jwt_pwd_!!223344");
 
 var mongoose = require("mongoose");
 const authControllerApi = require("./controllers/api/authControllerApi");
@@ -204,7 +204,7 @@ function loggedIn(req, res, next) {
 function validarUsuario(req, res, next) {
   jwt.verify(
     req.headers["x-access-token"], //Atributo en el header
-    req.app.get("secret_key"), //Toma la secret key que cifra el token
+    req.app.get("secretKey"), //Toma la secret key que cifra el token
     function (err, decoded) {
       if (err) {
         res.json({ status: "error", message: err.message, data: null });

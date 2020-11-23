@@ -1,13 +1,20 @@
 var Usuario = require("../../models/usuario");
 
 exports.usuarios_list = function (req, res) {
-  Usuario.find({}, (error, usuarios) => {
-    res.status(200).json({ usuarios: usuarios });
-  });
+  try {
+    Usuario.find({}, (error, usuarios) => {
+    return  res.status(200).json({ usuarios: usuarios });
+    });
+  } catch {
+    res.status(401).json({
+      status: "error",
+      message: "Usuarios no encontrados",
+      data: null,
+    });
+  }
 };
 
 exports.usuarios_create = function (req, res) {
-  console.log('Usuarios create');
   var usuario = new Usuario({
     nombre: req.body.nombre,
     email: req.body.email,

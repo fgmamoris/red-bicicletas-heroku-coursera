@@ -77,7 +77,6 @@ exports.bicicleta_delete = function (req, res) {
   puede retornar una de dos al hacer esto cotinuo colocando lo que quiero que haga después
  de haber cumplido el llamado a la función allBicis,que es lo que ves en la línea */
 // exports.bicicleta_list = function (req, res) {
-//   console.log("ENTRO");
 //   Bicicleta.allBicis({}, (error, bicicletas) => {
 //     if (error)
 //       return res

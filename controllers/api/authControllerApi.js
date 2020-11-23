@@ -106,10 +106,10 @@ module.exports = {
           userInfo != null &&
           bcrypt.compareSync(req.body.password, userInfo.password)
         ) {
-          //Si pass correcto, genero token
+           //Si pass correcto, genero token
           const token = jwt.sign(
-            { id: userInfo._id },
-            req.app.get("secretKey "),
+            { id: userInfo.id },
+            req.app.get("secretKey"),
             {
               expiresIn: "7d",
             }

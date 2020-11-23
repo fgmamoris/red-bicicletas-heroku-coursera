@@ -46,7 +46,6 @@ bicicletaSchema.statics.allBicis = function (cb) {
 };
 
 bicicletaSchema.statics.add = function (aBici, cb) {
-  console.log(aBici);
   this.create(aBici, cb);
 };
 bicicletaSchema.statics.findByCode = function (aCode, cb) {
@@ -70,7 +69,6 @@ bicicletaSchema.statics.deleteById = function (aId, cb) {
 };*/
 
 // bicicletaSchema.statics.update = function (aBici, cb) {
-//   console.log(aBici);
 //   return aBici.save({}, cb);
 // };
 
