@@ -6,7 +6,7 @@ const saltRounds = 10; //Da aleatoreadad a la encriptacion
 const uniqueValidator = require("mongoose-unique-validator");
 const crypto = require("crypto");
 const mailer = require("../mailer/mailer");
-const Token = require('./usuario');
+const Token = require('./token');
 
 const validateEmail = function (email) {
   //Regex, expresion regular
