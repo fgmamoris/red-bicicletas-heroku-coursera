@@ -9,7 +9,7 @@ const session = require("express-session");
 const Usuario = require("./models/usuario");
 const Token = require("./models/Token");
 const jwt = require("jsonwebtoken");
-const MongoDBStore = require('connect-mongodb-session')('session');
+const MongoDBStore = require("connect-mongodb-session")("session");
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === "development") {
     assert.ifError(err);
     assert.ok(false);
   });
-
+}
 var app = express();
 
 //Seteo la secret_key
@@ -223,6 +223,7 @@ function loggedIn(req, res, next) {
     res.redirect("/login");
   }
 }
+
 function validarUsuario(req, res, next) {
   jwt.verify(
     req.headers["x-access-token"], //Atributo en el header
@@ -251,7 +252,7 @@ app.get(
   })
 );
 /*Callback de redireccionar al usuario, luego de la autenticacion
-*/
+ */
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
@@ -259,4 +260,5 @@ app.get(
     failureRedirect: "/error",
   })
 );
+
 module.exports = app;
