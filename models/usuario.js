@@ -6,7 +6,7 @@ const saltRounds = 10; //Da aleatoreadad a la encriptacion
 const uniqueValidator = require("mongoose-unique-validator");
 const crypto = require("crypto");
 const mailer = require("../mailer/mailer");
-const Token = require('../models/Token');
+const Token = require("../models/Token");
 
 const validateEmail = function (email) {
   //Regex, expresion regular
@@ -39,6 +39,8 @@ var usuarioSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  googleId: String,
+  facebookId: String,
 });
 
 //Le incorporo a mongoose la libreria de uniqueValidator
@@ -174,80 +176,82 @@ usuarioSchema.statics.deleteByNombre = function (aNombre, cb) {
   this.deleteOne({ nombre: aNombre }, cb);
 };
 
-
-usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(condition, callback) {
+usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(
+  condition,
+  callback
+) {
   const self = this;
   console.log(condition);
-  this.findOne({
-      $or: [
-          { 'googleId': condition.id },
-          { 'email': condition.emails[0].value }
-      ]
-  }, 
-  (err, result) => {
+  this.findOne(
+    {
+      $or: [{ googleId: condition.id }, { email: condition.emails[0].value }],
+    },
+    (err, result) => {
       if (result) {
-          callback(err, result);
+        //si exite usuario entro por result, login
+        callback(err, result);
       } else {
-          let values = {};
-          console.log('=============== CONDITION ===============');
-          console.log(condition);
-
-          values.googleId = condition.id;
-          values.email = condition.emails[0].value;
-          values.nombre = condition.displayName || 'SIN NOMBRE';
-          values.verificado = true;
-          values.password = condition._json.etag;
+        //registros
+        let values = {};
+        console.log("=============== CONDITION ===============");
+        console.log(condition);
+        values.googleId = condition.id;
+        values.email = condition.emails[0].value;
+        values.nombre = condition.displayName || "SIN NOMBRE";
+        values.verificado = true;
+        values.password = condition._json.etag;
         //  values.password = crypto.randomBytes(16).toString('hex');
+        console.log("=============== VALUES ===============");
+        console.log(values);
+        self.create(values, function (err, user) {
+          if (err) {
+            console.log(err);
+          }
 
-          console.log('=============== VALUES ===============');
-          console.log(values);
-
-          self.create(values, function (err, user) {
-              if (err) {
-                  console.log(err);
-              }
-
-              return callback(err, user);
-          });
+          return callback(err, user);
+        });
       }
-  });
-}
+    }
+  );
+};
 
-usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(condition, callback) {
+usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(
+  condition,
+  callback
+) {
   const self = this;
   console.log(condition);
-  this.findOne({
-      $or: [
-          { 'facebookId': condition.id },
-          { 'email': condition.emails[0].value }
-      ]
-  }, 
-  (err, result) => {
+  this.findOne(
+    {
+      $or: [{ facebookId: condition.id }, { email: condition.emails[0].value }],
+    },
+    (err, result) => {
       if (result) {
-          callback(err, result);
+        callback(err, result);
       } else {
-          let values = {};
-          console.log('=============== CONDITION ===============');
-          console.log(condition);
+        let values = {};
+        console.log("=============== CONDITION ===============");
+        console.log(condition);
 
-          values.facebookId = condition.id;
-          values.email = condition.emails[0].value;
-          values.nombre = condition.displayName || 'SIN NOMBRE';
-          values.verificado = true;
-          values.password = crypto.randomBytes(16).toString('hex');
+        values.facebookId = condition.id;
+        values.email = condition.emails[0].value;
+        values.nombre = condition.displayName || "SIN NOMBRE";
+        values.verificado = true;
+        values.password = crypto.randomBytes(16).toString("hex");
 
-          console.log('=============== VALUES ===============');
-          console.log(values);
+        console.log("=============== VALUES ===============");
+        console.log(values);
 
-          self.create(values, function (err, user) {
-              if (err) {
-                  console.log(err);
-              }
+        self.create(values, function (err, user) {
+          if (err) {
+            console.log(err);
+          }
 
-              return callback(err, user);
-          });
+          return callback(err, user);
+        });
       }
-  });
-}
+    }
+  );
+};
 
 module.exports = mongoose.model("Usuario", usuarioSchema);
