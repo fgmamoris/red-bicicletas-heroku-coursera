@@ -21,24 +21,6 @@ passport.use(
     });
   })
 );
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.HOST + "/auth/google/callback",
-    },
-
-    function (accessToken, refreshToken, profile, cb) {
-      console.log(profile);
-
-      Usuario.findOneOrCreateByGoogle(profile, function (err, user) {
-        return cb(err, user);
-      });
-    }
-  )
-);
 /*Estrategia de google passport*/ 
 passport.use(
   new GoogleStrategy(
@@ -49,7 +31,9 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, cb) {
       //Profile trae todos los datos de cuenta
+      console.log('************PROFILE***************');
       console.log(profile);
+      console.log('**************************************');
       Usuario.findOneOrCreateByGoogle(profile, function (err, user) {
         return cb(err, user);
       });
