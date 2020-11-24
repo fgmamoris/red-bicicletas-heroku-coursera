@@ -9,7 +9,7 @@ const session = require("express-session");
 const Usuario = require("./models/usuario");
 const Token = require("./models/Token");
 const jwt = require("jsonwebtoken");
-const MongoDBStore = require("connect-mongodb-session")("session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
