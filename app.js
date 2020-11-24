@@ -6,15 +6,19 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const passport = require("./config/passport");
 const session = require("express-session");
-const Usuario = require("./models/usuario");
-const Token = require("./models/Token");
 const jwt = require("jsonwebtoken");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
+//models
+const Usuario = require("./models/usuario");
+const Token = require("./models/Token");
+
+//Routes
 var indexRouter = require("./routes/index");
 var indexExpress = require("./routes/indexExpress");
 var usersRouter = require("./routes/usuarios");
 var bicicletasRouter = require("./routes/bicicletas");
+//Routes API
 var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");
 var reservasApiRouter = require("./routes/api/reservas");
@@ -50,26 +54,6 @@ var app = express();
 //Seteo la secret_key
 app.set("secretKey", "jwt_pwd_!!223344");
 
-var mongoose = require("mongoose");
-/*CONEXION BD ATLAS*/
-const mongoDB = process.env.MONGO_URI; //Esto permite que cuando se deplye en heroku, este ultimo busque la variable de ambiente definida en la plataforma
-mongoose.connect(mongoDB, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
-mongoose.Promise = global.Promise;
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "Mongo DB conection error: "));
-
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
-/*Deprecation findOneAndUpdate*/
-mongoose.set("useFindAndModify", false);
-/*
-Configuracion de la cookie de la session
-*/
 app.use(
   session({
     cookie: { maxAge: 240 * 60 * 1000 }, //10 dias para que expire la session
@@ -79,6 +63,29 @@ app.use(
     secret: "red_bici_!_12_1!´", //Genera la insciptacion de la session de la cookie
   })
 );
+
+
+var mongoose = require("mongoose");
+/*CONEXION BD ATLAS*/
+const mongoDB = process.env.MONGO_URI; //Esto permite que cuando se deplye en heroku, este ultimo busque la variable de ambiente definida en la plataforma
+mongoose.connect(mongoDB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  /*Deprecation findOneAndUpdate*/
+  useFindAndModify: false,
+});
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on("error", console.error.bind(console, "Mongo DB conection error: "));
+
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
+
+/*
+Configuracion de la cookie de la session
+*/
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -89,6 +96,37 @@ app.use(passport.initialize());
 app.use(passport.session());
 //************ */
 app.use(express.static(path.join(__dirname, "public")));
+
+
+//Google Controller
+/* Ruta de verificacion de google*/
+app.use("/google2c62cf146c084933.html", function (req, res, next) {
+  //res.sendFile ;
+  res.sendFile("public/google2c62cf146c084933.html");
+});
+/*Para utilizar passsport-oauth20*/
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/plus.profile.emails.read",
+      "profile",
+      "email",
+    ],
+  })
+);
+/*Callback de redireccionar al usuario, luego de la autenticacion
+ */
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/error",
+  })
+);
+
+//Passport
 
 app.get("/login", function (req, res) {
   res.render("session/login");
@@ -178,23 +216,21 @@ app.post("/resetPassword", function (req, res) {
   });
 });
 
+
+//Configuracion de rutas
 app.use("/", indexRouter);
 app.use("/express", indexExpress); //Deja de utilizarlo luego de token
 app.use("/usuarios", usersRouter);
 //app.use("/bicicletas", bicicletasRouter); //Sin sec la ruta por default
 app.use("/bicicletas", loggedIn, bicicletasRouter); //Securizo la ruta
 //app.use("/api/bicicletas",  bicicletasApiRouter);// Sin aute jwt
+app.use("/token", tokenController);
+//Rutas API
 app.use("/api/bicicletas", validarUsuario, bicicletasApiRouter); // jwt para api
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
-app.use("/token", tokenController);
 app.use("/api/auth", authApiRouter);
 
-/* Ruta de verificacion de google*/
-app.use("/google2c62cf146c084933.html", function (req, res, next) {
-  //res.sendFile ;
-  res.sendFile("public/google2c62cf146c084933.html");
-});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -210,27 +246,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-/*Para utilizar passsport-oauth20*/
-app.get(
-  "/auth/google",
-  passport.authenticate("google", {
-    scope: [
-      "https://www.googleapis.com/auth/plus.login",
-      "https://www.googleapis.com/auth/plus.profile.emails.read",
-      "profile",
-      "email",
-    ],
-  })
-);
-/*Callback de redireccionar al usuario, luego de la autenticacion
- */
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/error",
-  })
-);
 
 function loggedIn(req, res, next) {
   /*Identifica si la session esta guardado en el middelware */
