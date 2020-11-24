@@ -57,27 +57,27 @@ passport.use(
   )
 );
 /*Estrategia de google passport*/ 
-passport.use(
-  new FacebookTokenStrategy(
-    {
-      clientID: process.env.FACEBOOK_ID,
-      clientSecret: process.env.FACEBOOK_SECRET,
-    },
-    function (accessToken, refreshToken, profile, done) {
-      try {
-        Usuario.findOneOrCreateByFacebook(profile, function (err, user) {
-          if (err) {
-            console.log("Error: " + err);
-          }
-          return done(err, user);
-        });
-      } catch (error) {
-        console.log(error);
-        return done(error, null);
-      }
-    }
-  )
-);
+// passport.use(
+//   new FacebookTokenStrategy(
+//     {
+//       clientID: process.env.FACEBOOK_ID,
+//       clientSecret: process.env.FACEBOOK_SECRET,
+//     },
+//     function (accessToken, refreshToken, profile, done) {
+//       try {
+//         Usuario.findOneOrCreateByFacebook(profile, function (err, user) {
+//           if (err) {
+//             console.log("Error: " + err);
+//           }
+//           return done(err, user);
+//         });
+//       } catch (error) {
+//         console.log(error);
+//         return done(error, null);
+//       }
+//     }
+//   )
+// );
 passport.serializeUser(function (user, done) {
   done(null, user.id);
 });
