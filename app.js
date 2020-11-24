@@ -19,7 +19,7 @@ var bicicletasApiRouter = require("./routes/api/bicicletas");
 var usuariosApiRouter = require("./routes/api/usuarios");
 var reservasApiRouter = require("./routes/api/reservas");
 var tokenController = require("./routes/token");
-const authControllerApiRouter = require("./routes/api/auth");
+const authApiRouter = require("./routes/api/auth");
 
 /*
 Guarda el store en memoria del servidor, si el servidor se resetea 
@@ -44,14 +44,13 @@ if (process.env.NODE_ENV === "development") {
     assert.ok(false);
   });
 }
+
 var app = express();
 
 //Seteo la secret_key
 app.set("secretKey", "jwt_pwd_!!223344");
 
 var mongoose = require("mongoose");
-const authControllerApi = require("./controllers/api/authControllerApi");
-
 /*CONEXION BD ATLAS*/
 const mongoDB = process.env.MONGO_URI; //Esto permite que cuando se deplye en heroku, este ultimo busque la variable de ambiente definida en la plataforma
 mongoose.connect(mongoDB, {
@@ -164,7 +163,6 @@ app.post("/resetPassword", function (req, res) {
     });
     return;
   }
-
   Usuario.findOne({ email: req.body.email }, function (err, usuario) {
     usuario.password = req.body.password;
     usuario.save(function (err) {
@@ -190,7 +188,7 @@ app.use("/api/bicicletas", validarUsuario, bicicletasApiRouter); // jwt para api
 app.use("/api/usuarios", usuariosApiRouter);
 app.use("/api/usuarios/reservas", reservasApiRouter);
 app.use("/token", tokenController);
-app.use("/api/auth", authControllerApiRouter);
+app.use("/api/auth", authApiRouter);
 
 /* Ruta de verificacion de google*/
 app.use("/google2c62cf146c084933.html", function (req, res, next) {
@@ -208,11 +206,31 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
   // render the error page
   res.status(err.status || 500);
   res.render("error");
 });
+/*Para utilizar passsport-oauth20*/
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/plus.profile.emails.read",
+      "profile",
+      "email",
+    ],
+  })
+);
+/*Callback de redireccionar al usuario, luego de la autenticacion
+ */
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/error",
+  })
+);
 
 function loggedIn(req, res, next) {
   /*Identifica si la session esta guardado en el middelware */
@@ -239,26 +257,5 @@ function validarUsuario(req, res, next) {
     }
   );
 }
-/*Para utilizar passsport-oauth20*/
-app.get(
-  "/auth/google",
-  passport.authenticate("google", {
-    scope: [
-      "https://www.googleapis.com/auth/plus.login",
-      "https://www.googleapis.com/auth/plus.profile.emails.read",
-      "profile",
-      "email",
-    ],
-  })
-);
-/*Callback de redireccionar al usuario, luego de la autenticacion
- */
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/error",
-  })
-);
 
 module.exports = app;
