@@ -215,43 +215,43 @@ usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(
   );
 };
 
-usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(
-  condition,
-  callback
-) {
-  const self = this;
-  console.log(condition);
-  this.findOne(
-    {
-      $or: [{ facebookId: condition.id }, { email: condition.emails[0].value }],
-    },
-    (err, result) => {
-      if (result) {
-        callback(err, result);
-      } else {
-        let values = {};
-        console.log("=============== CONDITION ===============");
-        console.log(condition);
+// usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(
+//   condition,
+//   callback
+// ) {
+//   const self = this;
+//   console.log(condition);
+//   this.findOne(
+//     {
+//       $or: [{ facebookId: condition.id }, { email: condition.emails[0].value }],
+//     },
+//     (err, result) => {
+//       if (result) {
+//         callback(err, result);
+//       } else {
+//         let values = {};
+//         console.log("=============== CONDITION ===============");
+//         console.log(condition);
 
-        values.facebookId = condition.id;
-        values.email = condition.emails[0].value;
-        values.nombre = condition.displayName || "SIN NOMBRE";
-        values.verificado = true;
-        values.password = crypto.randomBytes(16).toString("hex");
+//         values.facebookId = condition.id;
+//         values.email = condition.emails[0].value;
+//         values.nombre = condition.displayName || "SIN NOMBRE";
+//         values.verificado = true;
+//         values.password = crypto.randomBytes(16).toString("hex");
 
-        console.log("=============== VALUES ===============");
-        console.log(values);
+//         console.log("=============== VALUES ===============");
+//         console.log(values);
 
-        self.create(values, function (err, user) {
-          if (err) {
-            console.log(err);
-          }
+//         self.create(values, function (err, user) {
+//           if (err) {
+//             console.log(err);
+//           }
 
-          return callback(err, user);
-        });
-      }
-    }
-  );
-};
+//           return callback(err, user);
+//         });
+//       }
+//     }
+//   );
+// };
 
 module.exports = mongoose.model("Usuario", usuarioSchema);
