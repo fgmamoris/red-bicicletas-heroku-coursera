@@ -1,6 +1,8 @@
 const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 const Usuario = require("../models/usuario");
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
 
 /*Estategia de passport local*/
 passport.use(
