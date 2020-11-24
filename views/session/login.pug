@@ -25,6 +25,9 @@ body#LoginForm
             input#password.form-control(type='password' placeholder='Password' name="password")
           .forgot
             a(href='/forgotPassword') Olvidé mi password
-
-
+            
+          a.fa.fa-google(href='/auth/google') Login con Google
+            
+          a.fa.fa-facebook(href='/auth/facebook') Login con Facebook
+          
           button.btn.btn-primary(type='submit') Login
